@@ -96,8 +96,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (guess === secretArray.join('')) {
       showMessage("Tsaaku ʉnʉ̠!\nYou got it!");
       shareButton.style.display = "inline-block";
+      const guessCount = currentRow + 1;
       shareButton.onclick = () => {
-        const header = `Comanche Word Game 4 - ${currentRow + 1}/${MAX_GUESSES}`;
+        const header = `Comanche Word Game 4 - ${guessCount}/${MAX_GUESSES}`;
         const full = `${header}\n${results.join('\n')}`;
         navigator.clipboard.writeText(full);
         alert("Score copied to clipboard!");
