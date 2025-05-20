@@ -87,7 +87,7 @@ function submitGuess() {
   }
 
   if (guess === secretArray.join('')) {
-    showMessage('You got it!');
+    showMessage("Tsaaku ʉnʉ̠!\nYou got it!");
   } else if (currentRow === MAX_GUESSES - 1) {
     showMessage('The word was: ' + secretArray.join(''));
   }
@@ -97,6 +97,9 @@ function submitGuess() {
 }
 
 function showMessage(msg) {
+  messageContainer.style.fontSize = "1.8em";
+  messageContainer.style.fontWeight = "bold";
+  messageContainer.style.marginTop = "1em";
   messageContainer.textContent = msg;
 }
 
