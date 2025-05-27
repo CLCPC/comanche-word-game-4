@@ -68,48 +68,74 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitGuess() {
-    if (currentGuess.length !== WORD_LENGTH) return;
-    const guess = currentGuess.join('');
-    if (!validWords.includes(guess)) {
-      showMessage('Invalid word');
-      return;
-    }
+  if (currentGuess.length !== WORD_LENGTH) return;
 
-    let rowResult = '';
+  const guess = currentGuess.join('');
+  if (!validWords.includes(guess)) {
+    showMessage('Invalid word');
+    return;
+  }
 
-    for (let i = 0; i < WORD_LENGTH; i++) {
+  const guessArray = [...currentGuess];
+  const answerArray = [...secretArray];
+  const rowResult = [];
+  const tileColors = Array(WORD_LENGTH).fill('⬜');
+  const matched = Array(WORD_LENGTH).fill(false);
+
+  // First pass: correct spot
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    if (guessArray[i] === answerArray[i]) {
+      matched[i] = true;
+      tileColors[i] = '🟦';
       const tile = document.getElementById(`tile-${currentRow}-${i}`);
-      if (currentGuess[i] === secretArray[i]) {
-        tile.style.backgroundColor = '#66b3ff';
-        rowResult += '🟦';
-      } else if (secretArray.includes(currentGuess[i])) {
-        tile.style.backgroundColor = '#cce4ff';
-        rowResult += '🩵';
-      } else {
-        tile.style.backgroundColor = '#ccc';
-        rowResult += '⬜';
+      tile.style.backgroundColor = '#66b3ff';
+    }
+  }
+
+  // Second pass: in word, wrong spot
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    if (tileColors[i] === '🟦') continue;
+    const guessChar = guessArray[i];
+    let found = false;
+    for (let j = 0; j < WORD_LENGTH; j++) {
+      if (!matched[j] && guessChar === answerArray[j]) {
+        matched[j] = true;
+        found = true;
+        break;
       }
     }
 
-    results.push(rowResult);
-
-    if (guess === secretArray.join('')) {
-      showMessage("Tsaaku ʉnʉ̠!\nYou got it!");
-      shareButton.style.display = "inline-block";
-      const guessCount = currentRow + 1;
-      shareButton.onclick = () => {
-        const header = `Comanche Word Game 4 - ${guessCount}/${MAX_GUESSES}`;
-        const full = `${header}\n${results.join('\n')}`;
-        navigator.clipboard.writeText(full);
-        alert("Score copied to clipboard!");
-      };
-    } else if (currentRow === MAX_GUESSES - 1) {
-      showMessage('The word was: ' + secretArray.join(''));
+    const tile = document.getElementById(`tile-${currentRow}-${i}`);
+    if (found) {
+      tile.style.backgroundColor = '#cce4ff';
+      tileColors[i] = '🩵';
+    } else {
+      tile.style.backgroundColor = '#ccc';
+      tileColors[i] = '⬜';
     }
-
-    currentRow++;
-    currentGuess = [];
   }
+
+  results.push(tileColors.join(''));
+
+  const guessWord = guessArray.join('');
+  if (guessWord === answerArray.join('')) {
+    showMessage("Tsaaku ʉnʉ̠!\nYou got it!");
+    shareButton.style.display = "inline-block";
+    const guessCount = currentRow + 1;
+    shareButton.onclick = () => {
+      const header = `Comanche Word Game ${WORD_LENGTH} - ${guessCount}/${MAX_GUESSES}`;
+      const full = `${header}\n${results.join('\n')}`;
+      navigator.clipboard.writeText(full);
+      alert("Score copied to clipboard!");
+    };
+  } else if (currentRow === MAX_GUESSES - 1) {
+    showMessage('The word was: ' + secretArray.join(''));
+  }
+
+  currentRow++;
+  currentGuess = [];
+}
+
 
   function showMessage(msg) {
     messageContainer.textContent = msg;
