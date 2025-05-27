@@ -76,44 +76,45 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const guessArray = [...currentGuess];
-  const answerArray = [...secretArray];
-  const rowResult = [];
-  const tileColors = Array(WORD_LENGTH).fill('⬜');
-  const matched = Array(WORD_LENGTH).fill(false);
+const guessArray = [...currentGuess].map(c => c.normalize('NFC'));
+const answerArray = [...secretArray].map(c => c.normalize('NFC'));
+const rowResult = [];
+const tileColors = Array(WORD_LENGTH).fill('⬜');
+const matched = Array(WORD_LENGTH).fill(false);
 
-  // First pass: correct spot
-  for (let i = 0; i < WORD_LENGTH; i++) {
-    if (guessArray[i] === answerArray[i]) {
-      matched[i] = true;
-      tileColors[i] = '🟦';
-      const tile = document.getElementById(`tile-${currentRow}-${i}`);
-      tile.style.backgroundColor = '#66b3ff';
-    }
-  }
-
-  // Second pass: in word, wrong spot
-  for (let i = 0; i < WORD_LENGTH; i++) {
-    if (tileColors[i] === '🟦') continue;
-    const guessChar = guessArray[i];
-    let found = false;
-    for (let j = 0; j < WORD_LENGTH; j++) {
-      if (!matched[j] && guessChar === answerArray[j]) {
-        matched[j] = true;
-        found = true;
-        break;
-      }
-    }
-
+// First pass: correct spot
+for (let i = 0; i < WORD_LENGTH; i++) {
+  if (guessArray[i] === answerArray[i]) {
+    matched[i] = true;
+    tileColors[i] = '🟦';
     const tile = document.getElementById(`tile-${currentRow}-${i}`);
-    if (found) {
-      tile.style.backgroundColor = '#cce4ff';
-      tileColors[i] = '🩵';
-    } else {
-      tile.style.backgroundColor = '#ccc';
-      tileColors[i] = '⬜';
+    tile.style.backgroundColor = '#66b3ff';
+  }
+}
+
+// Second pass: in word, wrong spot
+for (let i = 0; i < WORD_LENGTH; i++) {
+  if (tileColors[i] === '🟦') continue;
+  const guessChar = guessArray[i];
+  let found = false;
+  for (let j = 0; j < WORD_LENGTH; j++) {
+    if (!matched[j] && guessChar === answerArray[j]) {
+      matched[j] = true;
+      found = true;
+      break;
     }
   }
+
+  const tile = document.getElementById(`tile-${currentRow}-${i}`);
+  if (found) {
+    tile.style.backgroundColor = '#cce4ff';
+    tileColors[i] = '🩵';
+  } else {
+    tile.style.backgroundColor = '#ccc';
+    tileColors[i] = '⬜';
+  }
+}
+
 
   results.push(tileColors.join(''));
 
