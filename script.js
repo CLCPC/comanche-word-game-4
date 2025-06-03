@@ -49,6 +49,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function handleKey(key) {
+      // Clear the message when the player starts typing again
+  messageContainer.textContent = "";  
     if (key === '←') {
       currentGuess.pop();
     } else if (key === '⏎') {
